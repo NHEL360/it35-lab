@@ -33,7 +33,7 @@ const Feed: React.FC = () => {
             style={{ width: "100%", borderRadius: "12px 12px 0 0" }}
           />
           <IonCardHeader>
-            <IonCardTitle>Card Title</IonCardTitle>
+            <IonCardTitle>Wonderful Nature</IonCardTitle>
             <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
           </IonCardHeader>
           <IonCardContent>
