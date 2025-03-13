@@ -10,34 +10,39 @@ import {
   IonToolbar, 
   IonItem, 
   IonText, 
+  IonGrid, 
+  IonRow, 
+  IonCol,
   useIonRouter,
-  IonRow,
-  IonGrid,
-  IonCol
 } from '@ionic/react';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const navigation = useIonRouter();
 
+  const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
-  const doLogin = () => {
-    console.log("Logging in with email:", email, "and password:", password);
-    // Navigate to the next page after successful login
-    navigation.push('/it35-lab/app', 'forward', 'replace');
-  }
+  const doRegister = () => {
+    if (password === confirmPassword) {
+      console.log("Registering user with email:", email);
+      navigation.push('/login', 'forward', 'replace'); // Navigate to login after registration
+    } else {
+      console.log("Passwords do not match");
+      alert("Passwords do not match. Please try again.");
+    }
+  };
 
-  const goToSignup = () => {
-    // Navigate to the register/signup page
-    navigation.push('/register', 'forward', 'replace');
+  const goBackToLogin = () => {
+    navigation.push('/login', 'forward', 'replace');
   }
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Login</IonTitle>
+          <IonTitle>Register</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -45,7 +50,19 @@ const Login: React.FC = () => {
           <IonRow>
             <IonCol size="12" sizeMd="6" offsetMd="3">
               <h1 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 'bold', color: '#4285F4' }}>My App</h1>
-              
+
+              {/* Full Name Input */}
+              <IonItem className="ion-margin-bottom">
+                <IonLabel position="stacked">Full Name</IonLabel>
+                <IonInput 
+                  value={name} 
+                  onIonChange={(e) => setName(e.detail.value!)} 
+                  required 
+                  style={{ borderRadius: '5px', padding: '10px' }}
+                />
+              </IonItem>
+
+              {/* Email Input */}
               <IonItem className="ion-margin-bottom">
                 <IonLabel position="stacked">Email</IonLabel>
                 <IonInput 
@@ -56,6 +73,8 @@ const Login: React.FC = () => {
                   style={{ borderRadius: '5px', padding: '10px' }}
                 />
               </IonItem>
+
+              {/* Password Input */}
               <IonItem className="ion-margin-bottom">
                 <IonLabel position="stacked">Password</IonLabel>
                 <IonInput 
@@ -67,7 +86,20 @@ const Login: React.FC = () => {
                 />
               </IonItem>
 
-              <IonButton onClick={doLogin} expand="full" style={{
+              {/* Confirm Password Input */}
+              <IonItem className="ion-margin-bottom">
+                <IonLabel position="stacked">Confirm Password</IonLabel>
+                <IonInput 
+                  type="password" 
+                  value={confirmPassword} 
+                  onIonChange={(e) => setConfirmPassword(e.detail.value!)} 
+                  required 
+                  style={{ borderRadius: '5px', padding: '10px' }}
+                />
+              </IonItem>
+
+              {/* Register Button */}
+              <IonButton onClick={doRegister} expand="full" style={{
                 backgroundColor: '#4285F4', 
                 color: 'white', 
                 padding: '15px', 
@@ -75,12 +107,12 @@ const Login: React.FC = () => {
                 marginTop: '20px',
                 borderRadius: '5px',
               }}>
-                Login
+                Register
               </IonButton>
 
-              {/* Sign up link */}
+              {/* Link to go back to Login Page */}
               <IonText color="medium" style={{ display: 'block', textAlign: 'center', marginTop: '20px' }}>
-                <p>Don't have an account? <span style={{ color: '#4285F4', cursor: 'pointer' }} onClick={goToSignup}>Sign up</span></p>
+                <p>Already have an account? <span style={{ color: '#4285F4', cursor: 'pointer' }} onClick={goBackToLogin}>Login</span></p>
               </IonText>
             </IonCol>
           </IonRow>
@@ -90,4 +122,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;
