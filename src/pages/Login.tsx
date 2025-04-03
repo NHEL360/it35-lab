@@ -13,20 +13,45 @@ import {
   useIonRouter,
   IonRow,
   IonGrid,
-  IonCol
+  IonCol,
+  IonToast,
+  IonAlert
 } from '@ionic/react';
-
+import { supabase } from '../utils/supabaseClient';
+const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void }> = ({ message, isOpen, onClose }) => {
+  return (
+    <IonAlert
+      isOpen={isOpen}
+      onDidDismiss={onClose}
+      header="Notification"
+      message={message}
+      buttons={['OK']}
+    />
+  );
+};
 const Login: React.FC = () => {
   const navigation = useIonRouter();
 
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
-  const doLogin = () => {
-    console.log("Logging in with email:", email, "and password:", password);
-    // Navigate to the next page after successful login
-    navigation.push('/it35-lab/app', 'forward', 'replace');
-  }
+  const doLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setAlertMessage(error.message);
+      setShowAlert(true);
+      return;
+    }
+
+    setShowToast(true); 
+    setTimeout(() => {
+      navigation.push('/it35-lab/app', 'forward', 'replace');
+    }, 300);
+  };
 
   const goToSignup = () => {
     // Navigate to the register/signup page
@@ -85,6 +110,18 @@ const Login: React.FC = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
+
+        <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
+
+        {/* IonToast for success message */}
+          <IonToast
+           isOpen={showToast}
+           onDidDismiss={() => setShowToast(false)}
+          message="Login successful! Redirecting..."
+          duration={1500}
+          position="top"
+          color="primary"
+/>
       </IonContent>
     </IonPage>
   );
