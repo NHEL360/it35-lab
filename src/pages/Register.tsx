@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const doRegister = () => {
     if (password === confirmPassword) {
       console.log("Registering user with email:", email);
-      navigation.push('/login', 'forward', 'replace'); // Navigate to login after registration
+      navigation.push('/it35-lab', 'forward', 'replace'); // Navigate to login after registration
     } else {
       console.log("Passwords do not match");
       alert("Passwords do not match. Please try again.");
