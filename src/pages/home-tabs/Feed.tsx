@@ -1,45 +1,37 @@
 import { 
   IonButtons,
-  IonContent, 
-  IonHeader, 
-  IonMenuButton, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar,
-  IonCard, 
-  IonCardContent,
-  IonCardHeader, 
-  IonCardSubtitle, 
-  IonCardTitle 
+    IonContent, 
+    IonHeader, 
+    IonMenuButton, 
+    IonPage, 
+    IonTitle, 
+    IonToolbar 
 } from '@ionic/react';
+import FeedContainer from '../../components/FeedContainer';
 
 const Feed: React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton />
+          <IonButtons slot='start'>
+            <IonMenuButton></IonMenuButton>
           </IonButtons>
           <IonTitle>Feed</IonTitle>
         </IonToolbar>
       </IonHeader>
-
-      <IonContent fullscreen className="ion-padding">
-        <IonCard>
-          <img 
-            alt="Silhouette of mountains" 
-            src="https://i.pinimg.com/736x/64/9e/60/649e609fcca51fe06ca7cf0e2eecff5a.jpg" 
-            style={{ width: "100%", borderRadius: "12px 12px 0 0" }}
-          />
-          <IonCardHeader>
-            <IonCardTitle>Wonderful Nature</IonCardTitle>
-            <IonCardSubtitle>Card Subtitle</IonCardSubtitle>
-          </IonCardHeader>
-          <IonCardContent>
-           Nothing more, nothing less.
-          </IonCardContent>
-        </IonCard>
+      <IonContent fullscreen>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
+          Feed
+        </div>
+        <FeedContainer />
       </IonContent>
     </IonPage>
   );
