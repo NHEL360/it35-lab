@@ -24,7 +24,7 @@ const FeedContainer = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const { data: authData } = await supabase.auth.getUser();
-      if (authData?.user?.email?.endsWith('@nbsc.edu.ph')) {
+      if (authData?.user) {
         setUser(authData.user);
         const { data: userData, error } = await supabase
           .from('users')
@@ -37,14 +37,19 @@ const FeedContainer = () => {
         }
       }
     };
+  
     const fetchPosts = async () => {
-      const { data, error } = await supabase.from('posts').select('*').order('post_created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('post_created_at', { ascending: false });
       if (!error) setPosts(data as Post[]);
     };
+  
     fetchUser();
     fetchPosts();
   }, []);
-
+  
   const createPost = async () => {
     if (!postContent || !user || !username) return;
     const { data, error } = await supabase.from('posts').insert([{ post_content: postContent, user_id: user.id, username }]).select('*');

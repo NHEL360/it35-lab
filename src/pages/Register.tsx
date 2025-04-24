@@ -1,45 +1,23 @@
 import React, { useState } from 'react';
-import { 
-  IonButton, 
-  IonContent, 
-  IonHeader, 
-  IonInput, 
-  IonLabel, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar, 
-  IonItem, 
-  IonText, 
-  IonGrid, 
-  IonRow, 
-  IonCol,
-  useIonRouter,
+import {
+  IonButton,
+  IonContent,
+  IonInput,
   IonInputPasswordToggle,
+  IonPage,
   IonModal,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardSubtitle,
-  IonCardTitle,
-  IonAlert
+  IonText,
+  IonTitle,
+  IonAlert,
 } from '@ionic/react';
 import { supabase } from '../utils/supabaseClient';
 import bcrypt from 'bcryptjs';
-const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void }> = ({ message, isOpen, onClose }) => {
-  return (
-    <IonAlert
-      isOpen={isOpen}
-      onDidDismiss={onClose}
-      header="Notification"
-      message={message}
-      buttons={['OK']}
-    />
-  );
-};
+
+const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void }> = ({ message, isOpen, onClose }) => (
+  <IonAlert isOpen={isOpen} onDidDismiss={onClose} header="Notification" message={message} buttons={['OK']} />
+);
 
 const Register: React.FC = () => {
-  const navigation = useIonRouter();
-
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -52,145 +30,92 @@ const Register: React.FC = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   const handleOpenVerificationModal = () => {
-      if (password !== confirmPassword) {
-          setAlertMessage("Passwords do not match.");
-          setShowAlert(true);
-          return;
-      }
-
-      setShowVerificationModal(true);
+    if (password !== confirmPassword) {
+      setAlertMessage("Passwords do not match.");
+      setShowAlert(true);
+      return;
+    }
+    setShowVerificationModal(true);
   };
 
   const doRegister = async () => {
-      setShowVerificationModal(false);
-  
-      try {
-          // Sign up in Supabase authentication
-          const { data, error } = await supabase.auth.signUp({ email, password });
-  
-          if (error) {
-              throw new Error("Account creation failed: " + error.message);
-          }
-  
-          // Hash password before storing in the database
-          const salt = await bcrypt.genSalt(10);
-          const hashedPassword = await bcrypt.hash(password, salt);
-  
-          // Insert user data into 'users' table
-          const { error: insertError } = await supabase.from("users").insert([
-              {
-                  username,
-                  user_email: email,
-                  user_firstname: firstName,
-                  user_lastname: lastName,
-                  user_password: hashedPassword,
-              },
-          ]);
-  
-          if (insertError) {
-              throw new Error("Failed to save user data: " + insertError.message);
-          }
-  
-          setShowSuccessModal(true);
-      } catch (err) {
-          // Ensure err is treated as an Error instance
-          if (err instanceof Error) {
-              setAlertMessage(err.message);
-          } else {
-              setAlertMessage("An unknown error occurred.");
-          }
-          setShowAlert(true);
-      }
-  };
-  
+    setShowVerificationModal(false);
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) throw new Error("Account creation failed: " + error.message);
 
-  const goBackToLogin = () => {
-    navigation.push('/login', 'forward', 'replace');
-  }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const { error: insertError } = await supabase.from("users").insert([{
+        username,
+        user_email: email,
+        user_firstname: firstName,
+        user_lastname: lastName,
+        user_password: hashedPassword,
+      }]);
+
+      if (insertError) throw new Error("Failed to save user data: " + insertError.message);
+      setShowSuccessModal(true);
+    } catch (err) {
+      setAlertMessage(err instanceof Error ? err.message : "An unknown error occurred.");
+      setShowAlert(true);
+    }
+  };
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Register</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className="ion-padding" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12" sizeMd="6" offsetMd="3">
-              <h1 style={{ textAlign: 'center', fontSize: '36px', fontWeight: 'bold', color: '#4285F4' }}>My App</h1>
-              <IonInput label="Username" labelPlacement="stacked" fill="outline" type="text" placeholder="Enter a unique username" value={username} onIonChange={e => setUsername(e.detail.value!)} style={{ marginTop: '15px' }} />
-                <IonInput label="First Name" labelPlacement="stacked" fill="outline" type="text" placeholder="Enter your first name" value={firstName} onIonChange={e => setFirstName(e.detail.value!)} style={{ marginTop: '15px' }} />
-                <IonInput label="Last Name" labelPlacement="stacked" fill="outline" type="text" placeholder="Enter your last name" value={lastName} onIonChange={e => setLastName(e.detail.value!)} style={{ marginTop: '15px' }} />
-                <IonInput label="Email" labelPlacement="stacked" fill="outline" type="email" placeholder="youremail@nbsc.edu.ph" value={email} onIonChange={e => setEmail(e.detail.value!)} style={{ marginTop: '15px' }} />
-                <IonInput label="Password" labelPlacement="stacked" fill="outline" type="password" placeholder="Enter password" value={password} onIonChange={e => setPassword(e.detail.value!)} style={{ marginTop: '15px' }} >
-                    <IonInputPasswordToggle slot="end" />
-                </IonInput>
-                <IonInput label="Confirm Password" labelPlacement="stacked" fill="outline" type="password" placeholder="Confirm password" value={confirmPassword} onIonChange={e => setConfirmPassword(e.detail.value!)} style={{ marginTop: '15px' }} >
-                    <IonInputPasswordToggle slot="end" />
-                </IonInput>
-              {/* Register Button */}
-              <IonButton onClick={handleOpenVerificationModal} expand="full" style={{
-                backgroundColor: '#4285F4', 
-                color: 'white', 
-                padding: '15px', 
-                fontSize: '16px', 
-                marginTop: '20px',
-                borderRadius: '5px',
-              }}>
-                Register
-              </IonButton>
+      <IonContent className="ion-padding">
+        <div className="flex flex-col items-center justify-center mt-10">
+          <img src="https://cdn-icons-gif.flaticon.com/18986/18986439.gif" alt="Register" className="w-36 h-36 rounded-full" />
+          <h1 className="text-center text-xl font-bold mt-4 mb-6">CREATE ACCOUNT</h1>
 
-              {/* Link to go back to Login Page */}
-              <IonText color="medium" style={{ display: 'block', textAlign: 'center', marginTop: '20px' }}>
-                <p>Already have an account? <span style={{ color: '#4285F4', cursor: 'pointer' }} onClick={goBackToLogin}>Login</span></p>
-              </IonText>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+          <div className="w-full max-w-md p-6 border-4 rounded-xl shadow-lg bg-white"
+            style={{ borderImage: 'linear-gradient(to right, red, blue) 1' }}>
+            <IonInput label="Username" labelPlacement="stacked" fill="outline" value={username} onIonChange={e => setUsername(e.detail.value!)} placeholder="Enter username" className="mb-4" />
+            <IonInput label="First Name" labelPlacement="stacked" fill="outline" value={firstName} onIonChange={e => setFirstName(e.detail.value!)} placeholder="Enter first name" className="mb-4" />
+            <IonInput label="Last Name" labelPlacement="stacked" fill="outline" value={lastName} onIonChange={e => setLastName(e.detail.value!)} placeholder="Enter last name" className="mb-4" />
+            <IonInput label="Email" labelPlacement="stacked" fill="outline" type="email" value={email} onIonChange={e => setEmail(e.detail.value!)} placeholder="Enter email" className="mb-4" />
+            <IonInput label="Password" labelPlacement="stacked" fill="outline" type="password" value={password} onIonChange={e => setPassword(e.detail.value!)} placeholder="Password" className="mb-4">
+              <IonInputPasswordToggle slot="end" />
+            </IonInput>
+            <IonInput label="Confirm Password" labelPlacement="stacked" fill="outline" type="password" value={confirmPassword} onIonChange={e => setConfirmPassword(e.detail.value!)} placeholder="Confirm password" className="mb-4">
+              <IonInputPasswordToggle slot="end" />
+            </IonInput>
+            <IonButton onClick={handleOpenVerificationModal} expand="full" shape="round" className="mt-4">Register</IonButton>
+            <IonButton routerLink="/it35-lab" expand="full" fill="clear" shape="round">Already have an account? Sign in</IonButton>
+          </div>
+        </div>
 
         <IonModal isOpen={showVerificationModal} onDidDismiss={() => setShowVerificationModal(false)}>
-                    <IonContent className="ion-padding">
-                        <IonCard className="ion-padding" style={{ marginTop: '25%' }}>
-                            <IonCardHeader>
-                                <IonCardTitle>User Registration Details</IonCardTitle>
-                                <hr />
-                                <IonCardSubtitle>Username</IonCardSubtitle>
-                                <IonCardTitle>{username}</IonCardTitle>
+          <IonContent className="ion-padding">
+            <div className="max-w-md mx-auto mt-20 p-6 border border-gray-300 rounded-lg bg-white shadow">
+              <IonTitle className="text-center text-xl mb-4">Confirm Registration</IonTitle>
+              <IonText>
+                <p><strong>Username:</strong> {username}</p>
+                <p><strong>Email:</strong> {email}</p>
+                <p><strong>Name:</strong> {firstName} {lastName}</p>
+              </IonText>
+              <div className="flex justify-end mt-4">
+                <IonButton fill="clear" onClick={() => setShowVerificationModal(false)}>Cancel</IonButton>
+                <IonButton onClick={doRegister}>Confirm</IonButton>
+              </div>
+            </div>
+          </IonContent>
+        </IonModal>
 
-                                <IonCardSubtitle>Email</IonCardSubtitle>
-                                <IonCardTitle>{email}</IonCardTitle>
+        <IonModal isOpen={showSuccessModal} onDidDismiss={() => setShowSuccessModal(false)}>
+          <IonContent className="ion-padding flex flex-col items-center justify-center text-center h-full">
+            <IonTitle className="mt-10">🎉 Registration Successful</IonTitle>
+            <IonText>
+              <p>Your account has been created successfully.</p>
+              <p>Please check your email for confirmation.</p>
+            </IonText>
+            <IonButton routerLink="/it35-lab" className="mt-4" color="primary">Go to Login</IonButton>
+          </IonContent>
+        </IonModal>
 
-                                <IonCardSubtitle>Name</IonCardSubtitle>
-                                <IonCardTitle>{firstName} {lastName}</IonCardTitle>
-                            </IonCardHeader>
-                            <IonCardContent></IonCardContent>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: '5px' }}>
-                                <IonButton fill="clear" onClick={() => setShowVerificationModal(false)}>Cancel</IonButton>
-                                <IonButton color="primary" onClick={doRegister}>Confirm</IonButton>
-                            </div>
-                        </IonCard>
-                    </IonContent>
-                </IonModal>
-
-                {/* Success Modal */}
-                <IonModal isOpen={showSuccessModal} onDidDismiss={() => setShowSuccessModal(false)}>
-                    <IonContent className="ion-padding" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', textAlign: 'center', marginTop: '35%' }}>
-                        <IonTitle style={{ marginTop: '35%' }}>Registration Successful 🎉</IonTitle>
-                        <IonText>
-                            <p>Your account has been created successfully.</p>
-                            <p>Please check your email address.</p>
-                        </IonText>
-                        <IonButton routerLink="/it35-lab" routerDirection="back" color="primary">
-                            Go to Login
-                        </IonButton>
-                    </IonContent>
-                </IonModal>
-
-                {/* Reusable AlertBox Component */}
-                <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
-
+        <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
       </IonContent>
     </IonPage>
   );
