@@ -1,16 +1,14 @@
-import { 
+import {
   IonAlert,
   IonAvatar,
   IonButton,
-  IonContent, 
-  IonIcon, 
-  IonInput, 
-  IonInputPasswordToggle,  
-  IonPage,  
-  IonToast,  
+  IonContent,
+  IonInput,
+  IonInputPasswordToggle,
+  IonPage,
+  IonToast,
   useIonRouter
 } from '@ionic/react';
-import { logoIonic } from 'ionicons/icons';
 import { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 
@@ -43,75 +41,116 @@ const Login: React.FC = () => {
       return;
     }
 
-    setShowToast(true); 
+    setShowToast(true);
     setTimeout(() => {
       navigation.push('/it35-lab/app', 'forward', 'replace');
     }, 300);
   };
-  
+
   return (
     <IonPage>
-      <IonContent className='ion-padding'>
-        <div style={{
+      <IonContent
+        className="ion-padding"
+        style={{
+          fontFamily: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif",
           display: 'flex',
-          flexDirection:'column',
-          alignItems: 'center',
+          flexDirection: 'column',
           justifyContent: 'center',
-          marginTop:'25%'
-        }}>
+          height: '100%',
+          backgroundColor: '#f8f9fa'
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '400px',
+            margin: 'auto',
+            background: '#ffffff',
+            padding: '40px 20px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
           <IonAvatar
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '150px',
-              height: '150px',
-              borderRadius: '50%', 
-              overflow: 'hidden' 
+              marginBottom: '20px',
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              overflow: 'hidden',
+              backgroundColor: '#f1f3f4',
             }}
           >
-            <IonIcon 
-              icon={logoIonic}
-              color='primary'
-              style={{ fontSize: '120px', color: '#6c757d' }} 
+            <img
+              src="https://imgs.search.brave.com/NALf81myMtUfEqikqKeNKT2ecFtKJBj1T24fObQ5B1g/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS50ZW5vci5jb20v/YVJucWkxVWFVMjBB/QUFBTS9jaGluYS1n/aWYtY2hpbmVzZS1n/aWYuZ2lm.jpeg"
+              alt="Custom Avatar"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </IonAvatar>
-          <h1 style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>USER LOGIN</h1>
+
+          <h1 style={{ fontSize: '24px', marginBottom: '20px', fontWeight: 500, color: '#202124' }}>
+            Sign in
+          </h1>
+
           <IonInput
-            label="Email" 
-            labelPlacement="floating" 
+            label="Email"
+            labelPlacement="floating"
             fill="outline"
             type="email"
-            placeholder="Enter Email"
+            placeholder="Enter your email"
             value={email}
-            onIonChange={e => setEmail(e.detail.value!)}
+            onIonChange={(e) => setEmail(e.detail.value!)}
+            style={{ width: '100%' }}
           />
-          <IonInput style={{ marginTop:'10px' }}      
+
+          <IonInput
+            style={{ marginTop: '15px', width: '100%' }}
             fill="outline"
             type="password"
-            placeholder="Password"
+            placeholder="Enter your password"
             value={password}
-            onIonChange={e => setPassword(e.detail.value!)}
+            onIonChange={(e) => setPassword(e.detail.value!)}
           >
-            <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
+            <IonInputPasswordToggle slot="end" />
           </IonInput>
+
+          <IonButton
+            onClick={doLogin}
+            expand="block"
+            shape="round"
+            style={{
+              marginTop: '30px',
+              backgroundColor: '#1a73e8',
+              color: '#fff',
+              fontWeight: 500,
+            }}
+          >
+            Sign In
+          </IonButton>
+
+          <IonButton
+            routerLink="/it35-lab/register"
+            expand="block"
+            fill="clear"
+            shape="round"
+            style={{
+              color: '#1a73e8',
+              fontWeight: 500,
+              marginTop: '10px',
+              textTransform: 'none',
+            }}
+          >
+            Don’t have an account? Register here
+          </IonButton>
         </div>
-        <IonButton onClick={doLogin} expand="full" shape='round'>
-          Login
-        </IonButton>
 
-        <IonButton routerLink="/it35-lab/register" expand="full" fill="clear" shape='round'>
-          Don't have an account? Register here
-        </IonButton>
-
-        {/* Reusable AlertBox Component */}
+        {/* Alert for login errors */}
         <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
 
-        {/* IonToast for success message */}
+        {/* Toast for success message */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
