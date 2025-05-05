@@ -10,6 +10,7 @@ import {
   IonTitle,
   IonAlert,
 } from '@ionic/react';
+import { useHistory } from 'react-router-dom'; // ✅ Import history
 import { supabase } from '../utils/supabaseClient';
 import bcrypt from 'bcryptjs';
 
@@ -18,6 +19,7 @@ const AlertBox: React.FC<{ message: string; isOpen: boolean; onClose: () => void
 );
 
 const Register: React.FC = () => {
+  const history = useHistory(); // ✅ Create history object
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -87,6 +89,7 @@ const Register: React.FC = () => {
           </div>
         </div>
 
+        {/* Verification Modal */}
         <IonModal isOpen={showVerificationModal} onDidDismiss={() => setShowVerificationModal(false)}>
           <IonContent className="ion-padding">
             <div className="max-w-md mx-auto mt-20 p-6 border border-gray-300 rounded-lg bg-white shadow">
@@ -104,6 +107,7 @@ const Register: React.FC = () => {
           </IonContent>
         </IonModal>
 
+        {/* Success Modal with Navigation Fix */}
         <IonModal isOpen={showSuccessModal} onDidDismiss={() => setShowSuccessModal(false)}>
           <IonContent className="ion-padding flex flex-col items-center justify-center text-center h-full">
             <IonTitle className="mt-10">🎉 Registration Successful</IonTitle>
@@ -111,10 +115,20 @@ const Register: React.FC = () => {
               <p>Your account has been created successfully.</p>
               <p>Please check your email for confirmation.</p>
             </IonText>
-            <IonButton routerLink="/it35-lab" className="mt-4" color="primary">Go to Login</IonButton>
+            <IonButton
+              className="mt-4"
+              color="primary"
+              onClick={() => {
+                setShowSuccessModal(false);
+                setTimeout(() => history.push("/it35-lab"), 300); // 👈 programmatic navigation
+              }}
+            >
+              Go to Login
+            </IonButton>
           </IonContent>
         </IonModal>
 
+        {/* Alert Box */}
         <AlertBox message={alertMessage} isOpen={showAlert} onClose={() => setShowAlert(false)} />
       </IonContent>
     </IonPage>
